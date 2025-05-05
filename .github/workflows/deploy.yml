@@ -1,16 +1,20 @@
 name: Deploy
 
 on:
-  push:
+  workflows_run:
+    workflows: ["CI"]
     branches: [main]
+    types:
+      - completed
 
 jobs:
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
+    permission:
+      contents: write
     # Запускається тільки якщо всі перевірки пройшли успішно
-    needs: [build]
-    if: success()
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
